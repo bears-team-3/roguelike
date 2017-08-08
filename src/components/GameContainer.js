@@ -7,7 +7,8 @@ export default class GameContainer extends Component {
       rot: document.createElement('script'),
       game: document.createElement('script'),
       map: document.createElement('script'),
-      player: document.createElement('script')
+      player: document.createElement('script'),
+      screens: document.createElement('script')
     };
 
     for (let script in scripts) {
