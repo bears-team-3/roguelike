@@ -8,3 +8,12 @@ body {
   top: 1.7rem;
   left: 1.7rem;
 }
+
+.leaderboard-button {
+  top: 1.7rem;
+  right: 1.7rem;
+}
+
+.save-score-btn {
+  margin: auto;
+}

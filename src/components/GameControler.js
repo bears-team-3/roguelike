@@ -2,28 +2,53 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
 import Login from './Login';
+import MockupScore from './MockupScore';
+import {Link} from 'react-router-dom'
 
 class GameControler extends Component {
-  render() {
+  displayAuth() {
     const { dispatch, auth } = this.props;
-    return (
-      <div className="pa3">
-        {auth.authed
-          ? <a
-              className="link dim black absolute pointer mr3 back-button"
-              onClick={() => dispatch(actions.startLogout())}
-            >
-              Logout
-            </a>
-          : <Login />}
-      </div>
-    );
+
+    if (auth.authed) {
+      return (
+        <a
+          className="link dim black absolute pointer mr3 back-button"
+          onClick={() => dispatch(actions.startLogout())}
+        >
+          Logout
+        </a>
+      );
+    }
+    return <Login />;
+  }
+
+  render() {
+    const { game, auth, dispatch } = this.props;
+
+    return <div className="pa3">
+        <Link to={'/leaderboard'} className="link dim black absolute pointer mr3 leaderboard-button">
+          Leaderboard
+        </Link>
+        {game.score ? <div>
+              <div className="flex">
+                <h2>
+                  Your score is {game.score}
+                </h2>
+                {auth.authed ? <a className="f6 link dim br3 ba bw1 ph3 pv2 dib black pointer save-score-btn" onClick={() => dispatch(actions.saveScoreforLoggedUser(auth.uid, game.score, auth.username))}>
+                      Save score
+                    </a> : ''}
+              </div>
+              {this.displayAuth()}
+            </div> : ''}
+        <MockupScore />
+      </div>;
   }
 }
 
 const mapStateToProps = state => {
   return {
-    auth: state.auth
+    auth: state.auth,
+    game: state.game
   };
 };
 
