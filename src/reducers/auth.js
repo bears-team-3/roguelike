@@ -12,6 +12,11 @@ export const authReducer = (state = { loading: true }, action) => {
       return {
         authed: false
       };
+    case 'SET_NAME':
+      return {
+        ...state,
+        name: action.name
+      }
     case 'LOADING':
       return {
         ...state,

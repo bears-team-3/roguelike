@@ -3,6 +3,17 @@ import * as actions from '../actions';
 import { connect } from 'react-redux';
 
 class Login extends Component {
+  state = {
+    name: ''
+  };
+
+  handleKeyPress(e) {
+    if (e.key === 'Enter') {
+      this.props.dispatch(actions.setNameForGuest(this.state.name));
+      this.setState({name: ''})
+    }
+  }
+
   onLogin() {
     const { dispatch } = this.props;
     dispatch(actions.startLogin());
@@ -34,7 +45,12 @@ class Login extends Component {
         <span className="center"> or </span>
         <div className="pa2 black-80">
           <label className="f6 b db mb2">Submit your name</label>
-          <input className="input-reset ba b--black-20 pa2 mb2 db w-100" />
+          <input
+            className="input-reset ba b--black-20 pa2 mb2 db w-100"
+            onChange={e => this.setState({ name: e.target.value })}
+            onKeyPress={this.handleKeyPress.bind(this)}
+            value={this.state.name}
+          />
         </div>
       </div>
     );

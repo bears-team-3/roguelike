@@ -23,7 +23,7 @@ export const loading = () => {
   };
 };
 
-export const saveScoreforLoggedUser = (uid, score, username) => {
+export const saveScoreForLoggedUser = (uid, score, username) => {
   return dispatch => {
     const scoreData = {
       score,
@@ -56,8 +56,6 @@ export const startLogin = () => {
         console.log('auth worked', result);
 
         const exists = await checkIfUserExists(result.user.uid);
-
-        await firebaseRef.ref('/scores').set({score: 23232});
 
         if (!exists) {
           await writeUserData(
@@ -96,15 +94,15 @@ export const setScore = score => {
   };
 };
 
-const addScores = (scores) => {
+const addScores = scores => {
   return {
     type: 'ADD_SCORES',
     scores
-  }
-}
+  };
+};
 
 export const getScores = () => {
-  return async (dispatch) => {
+  return async dispatch => {
     const scores = await firebaseRef.ref('/scores').once('value');
     const scoresObj = scores.val();
     const parsedScores = Object.keys(scoresObj)
@@ -114,6 +112,25 @@ export const getScores = () => {
       .sort((a, b) => a.score < b.score);
 
     return dispatch(addScores(parsedScores));
-  }
-}
+  };
+};
 
+export const setNameForGuest = name => {
+  return {
+    type: 'SET_NAME',
+    name
+  };
+};
+
+export const saveScoreForGuest = (username, score) => {
+  return async dispatch => {
+    const scoreData = { 
+      score,
+      username,
+      savedAt: moment().unix() };
+    
+    const savedScore =  await firebaseRef.ref('/scores').push(scoreData);
+    dispatch(setScore(0));
+    dispatch(setNameForGuest(null))
+  };
+};

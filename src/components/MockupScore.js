@@ -9,11 +9,14 @@ class MockupScore extends Component {
 
   handleScore() {
     const { score } = this.state;
-    this.props.dispatch(actions.setScore(parseInt(score, 10)));
+    const { dispatch } = this.props;
+
+    dispatch(actions.setScore(parseInt(score, 10)));
     this.setState({ score: '' });
   }
 
   render() {
+
     return (
       <div>
         <input
@@ -31,7 +34,5 @@ class MockupScore extends Component {
     );
   }
 }
-
-
 
 export default connect()(MockupScore);

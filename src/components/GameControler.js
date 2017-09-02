@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import * as actions from '../actions';
 import Login from './Login';
 import MockupScore from './MockupScore';
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom';
 
 class GameControler extends Component {
   displayAuth() {
@@ -19,29 +19,55 @@ class GameControler extends Component {
         </a>
       );
     }
+    else if(auth.name){
+      return ''
+    }
     return <Login />;
   }
 
-  render() {
-    const { game, auth, dispatch } = this.props;
+  handleSaveScore() {
+    const { auth, dispatch, game } = this.props;
+    if (auth.authed) {
+      dispatch(
+        actions.saveScoreForLoggedUser(auth.uid, game.score, auth.username)
+      );
+    } else if (auth.name.length > 0) {
+      dispatch(actions.saveScoreForGuest(auth.name, game.score));
+    }
+  }
 
-    return <div className="pa3">
-        <Link to={'/leaderboard'} className="link dim black absolute pointer mr3 leaderboard-button">
+  render() {
+    const { game, auth } = this.props;
+
+    return (
+      <div className="pa3">
+        <Link
+          to={'/leaderboard'}
+          className="link dim black absolute pointer mr3 leaderboard-button"
+        >
           Leaderboard
         </Link>
-        {game.score ? <div>
+        {game.score
+          ? <div>
               <div className="flex">
                 <h2>
                   Your score is {game.score}
                 </h2>
-                {auth.authed ? <a className="f6 link dim br3 ba bw1 ph3 pv2 dib black pointer save-score-btn" onClick={() => dispatch(actions.saveScoreforLoggedUser(auth.uid, game.score, auth.username))}>
+                {auth.authed || auth.name
+                  ? <a
+                      className="f6 link dim br3 ba bw1 ph3 pv2 dib black pointer save-score-btn"
+                      onClick={this.handleSaveScore.bind(this)}
+                    >
                       Save score
-                    </a> : ''}
+                    </a>
+                  : ''}
               </div>
               {this.displayAuth()}
-            </div> : ''}
+            </div>
+          : ''}
         <MockupScore />
-      </div>;
+      </div>
+    );
   }
 }
 
