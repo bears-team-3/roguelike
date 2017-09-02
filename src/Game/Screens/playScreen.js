@@ -28,7 +28,7 @@ export const playScreen = {
   },
 
   exit: function() {
-    console.log(this._player.getScore());
+    Game._playerScore = this._player.getScore();
     console.log('Exited play screen.');
   },
 

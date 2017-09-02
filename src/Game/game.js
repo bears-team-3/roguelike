@@ -5,6 +5,7 @@ export let Game = {
   _currentScreen: null,
   _screenWidth: 80,
   _screenHeight: 24,
+  _playerScore: null,
 
   init: function() {
     // create display with rot defaults

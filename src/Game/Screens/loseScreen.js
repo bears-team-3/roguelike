@@ -1,6 +1,10 @@
+import { Game } from '../game';
+
 export const loseScreen = {
   enter: function() {
     console.log('Entered lose screen.');
+    Game._playerScore.bossKilled = false;
+    console.log(Game._playerScore);
   },
 
   exit: function() {
