@@ -33,6 +33,7 @@ export const playScreen = {
   },
 
   exit: function() {
+    Game._playerScore = this._player.getScore();
     console.log('Exited play screen.');
   },
 

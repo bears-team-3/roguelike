@@ -26,7 +26,8 @@ export const Player = {
     EntityMixins.MessageRecipient,
     EntityMixins.FoodConsumer,
     EntityMixins.ExperienceGainer,
-    EntityMixins.PlayerStatGainer
+    EntityMixins.PlayerStatGainer,
+    EntityMixins.PlayerScore
   ]
 };
 

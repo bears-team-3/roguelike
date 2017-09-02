@@ -1,8 +1,10 @@
-import { ROT } from '../game';
+import { ROT, Game } from '../game';
 
 export const winScreen = {
   enter: function() {
     console.log('Entered win screen.');
+    Game._playerScore.bossKilled = true;
+    console.log(Game._playerScore);
   },
 
   exit: function() {
