@@ -6,14 +6,14 @@ export const Player = {
   name: 'player',
   character: '@',
   foreground: 'yellow',
-  maxHp: 40,
+  maxHp: 1,
   attackValue: 10,
   sightRadius: 6,
   inventorySlots: 22,
   // Max fullness
   maxFullness: 1000,
   // Starting fullness
-  fullness: 500,
+  fullness: 2,
   // Lose 1 fullness per step
   fullnessDepletionRate: 1,
   mixins: [
@@ -26,7 +26,8 @@ export const Player = {
     EntityMixins.MessageRecipient,
     EntityMixins.FoodConsumer,
     EntityMixins.ExperienceGainer,
-    EntityMixins.PlayerStatGainer
+    EntityMixins.PlayerStatGainer,
+    EntityMixins.PlayerScore
   ]
 };
 

@@ -28,6 +28,7 @@ export const playScreen = {
   },
 
   exit: function() {
+    console.log(this._player.getScore());
     console.log('Exited play screen.');
   },
 
