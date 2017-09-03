@@ -7,7 +7,7 @@ import { Provider } from 'react-redux';
 import 'tachyons';
 import './styles/index.css';
 
-const store = configureStore({});
+export const store = configureStore({});
 
 ReactDOM.render(
   <Provider store={store}>

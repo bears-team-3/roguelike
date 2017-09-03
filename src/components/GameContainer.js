@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import { ROT, Game } from '../Game/game';
 import Screen from '../Game/Screens/index';
+import GameControler from './GameControler';
+import { connect } from 'react-redux';
 
-export default class GameContainer extends Component {
+
+class GameContainer extends Component {
   componentDidMount() {
     // Check if rot.js can work on this browser
     if (!ROT.isSupported()) {
@@ -19,14 +22,26 @@ export default class GameContainer extends Component {
     }
   }
   render() {
-    return (
-      <div className="flex flex-column justify-center items-center">
-        <h1 className="mv5 f1 normal tracked gold">THE LABYRINTH</h1>
+    return <div className="flex flex-column justify-center items-center">
+        <GameControler />
+        <h1 className="mv4 f1 normal tracked gold">THE LABYRINTH</h1>
+        { this.props.game.score ?
+          <h2 className="f3 normal tracked gold"> 
+            Your score is {this.props.game.score}
+          </h2> : ''
+        }
         <div className="game-container" />
         <p className="tracked f5" style={{ color: '#BEBEBE' }}>
           Press ? for help.
         </p>
-      </div>
-    );
+      </div>;
   }
 }
+
+const mapStateToProps = state => {
+  return {
+    game: state.game
+  };
+};
+
+export default connect(mapStateToProps, null)(GameContainer);

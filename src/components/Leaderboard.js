@@ -7,23 +7,19 @@ class LeaderBoard extends Component {
     this.props.dispatch(actions.getScores());
   }
   render() {
-    return (
-      <div>
-        <h1>LeaderBoard</h1>
+    return <div>
+        <h1 className="tracked gold ma0 pa4">LeaderBoard</h1>
         {this.props.scores.map(score => {
-          return (
-            <div className="dt dt--fixed" key={score.savedAt}>
-              <div className="dtc tc pv2 bg-black-10">
-                {score.username}
+          return <div className="dt dt--fixed" key={score.savedAt}>
+              <div className="dtc tc pv2 bg-black-90 ">
+                <span className='gold'>{score.username}</span>
               </div>
-              <div className="dtc tc pv2 bg-black-05">
-                {score.score}
+              <div className="dtc tc pv2 bg-black-90 ">
+                <span className='gold'>{score.score}</span>
               </div>
-            </div>
-          );
+            </div>;
         })}
-      </div>
-    );
+      </div>;
   }
 }
 const mapStateToProp = state => {

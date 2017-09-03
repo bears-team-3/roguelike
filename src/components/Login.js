@@ -22,7 +22,7 @@ class Login extends Component {
   render() {
     return (
       <div className="flex flex-column">
-        <p>To add your score to leaderboard</p>
+        <p className="tracked gold">To add your score to leaderboard</p>
         <a
           className="no-underline near-white bg-animate bg-near-black hover-bg-gray inline-flex items-center ma2 tc br2 pa2 pointer"
           title="GitHub"
@@ -42,9 +42,9 @@ class Login extends Component {
           </svg>
           <span className="f6 ml3 pr2">Login with GitHub</span>
         </a>
-        <span className="center"> or </span>
+        <span className="center white"> or </span>
         <div className="pa2 black-80">
-          <label className="f6 b db mb2">Submit your name</label>
+          <label className="f6 b db mb2 tracked gold">Submit your name</label>
           <input
             className="input-reset ba b--black-20 pa2 mb2 db w-100"
             onChange={e => this.setState({ name: e.target.value })}
