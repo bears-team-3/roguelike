@@ -10,7 +10,7 @@ class Login extends Component {
   handleKeyPress(e) {
     if (e.key === 'Enter') {
       this.props.dispatch(actions.setNameForGuest(this.state.name));
-      this.setState({name: ''})
+      this.setState({ name: '' });
     }
   }
 

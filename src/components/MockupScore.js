@@ -16,7 +16,6 @@ class MockupScore extends Component {
   }
 
   render() {
-
     return (
       <div>
         <input

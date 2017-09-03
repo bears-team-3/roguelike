@@ -124,13 +124,14 @@ export const setNameForGuest = name => {
 
 export const saveScoreForGuest = (username, score) => {
   return async dispatch => {
-    const scoreData = { 
+    const scoreData = {
       score,
       username,
-      savedAt: moment().unix() };
-    
-    const savedScore =  await firebaseRef.ref('/scores').push(scoreData);
+      savedAt: moment().unix()
+    };
+
+    const savedScore = await firebaseRef.ref('/scores').push(scoreData);
     dispatch(setScore(0));
-    dispatch(setNameForGuest(null))
+    dispatch(setNameForGuest(null));
   };
 };

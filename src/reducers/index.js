@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import { authReducer } from './auth';
-import {gameReducer} from './game'
-import { scoresReducer } from './scores'
+import { gameReducer } from './game';
+import { scoresReducer } from './scores';
 
 export const reducer = combineReducers({
   auth: authReducer,

@@ -18,9 +18,8 @@ class GameControler extends Component {
           Logout
         </a>
       );
-    }
-    else if(auth.name){
-      return ''
+    } else if (auth.name) {
+      return '';
     }
     return <Login />;
   }

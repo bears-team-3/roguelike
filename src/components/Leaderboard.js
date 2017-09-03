@@ -11,14 +11,16 @@ class LeaderBoard extends Component {
       <div>
         <h1>LeaderBoard</h1>
         {this.props.scores.map(score => {
-          return <div className="dt dt--fixed" key={score.savedAt}>
+          return (
+            <div className="dt dt--fixed" key={score.savedAt}>
               <div className="dtc tc pv2 bg-black-10">
                 {score.username}
               </div>
               <div className="dtc tc pv2 bg-black-05">
                 {score.score}
               </div>
-            </div>;
+            </div>
+          );
         })}
       </div>
     );
