@@ -210,7 +210,9 @@ export const playScreen = {
     // If the game is over, enter will bring the user to the losing screen.
     if (this._gameEnded) {
       if (inputType === 'keydown' && inputData.keyCode === ROT.VK_RETURN) {
-        Game.switchScreen(Screen.loseScreen);
+        // TODO: Comment out the one you don't need, delete winscreen after testing
+        Game.switchScreen(Screen.winScreen);
+        // Game.switchScreen(Screen.winScreen);
       }
       // Return to make sure the user can't still play
       return;

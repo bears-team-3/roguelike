@@ -6,14 +6,14 @@ export const Player = {
   name: 'player',
   character: '@',
   foreground: 'yellow',
-  maxHp: 50,
+  maxHp: 1, // TODO: Change back after testing: 50
   attackValue: 8,
   sightRadius: 6,
   inventorySlots: 22,
   // Max fullness
   maxFullness: 1000,
   // Starting fullness
-  fullness: 500,
+  fullness: 2, // TODO: Change back after testing: 500
   // Lose 1 fullness per step
   fullnessDepletionRate: 1,
   mixins: [
