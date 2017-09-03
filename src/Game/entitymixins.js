@@ -69,6 +69,7 @@ const EntityMixins = {
             this.getZ(),
             ItemRepository.create('corpse', {
               name: this._name + ' corpse',
+              foodValue: this._foodValue,
               foreground: this._foreground
             })
           );
@@ -92,32 +93,55 @@ const EntityMixins = {
       this.modifyFullnessBy(-this._fullnessDepletionRate);
     },
     modifyFullnessBy: function(points) {
-      this._fullness = this._fullness + points;
       if (this._fullness <= 0) {
-        this.kill('You have died of starvation!');
+        const currentHP = this.getHp();
+        if (currentHP <= 1) {
+          this.setHp(0);
+          this.kill('You have died of starvation!');
+        } else {
+          Messages.sendMessage(this, "You're losing health to starvation!");
+          this.setHp(currentHP - 1);
+        }
       } else if (this._fullness > this._maxFullness) {
         this.kill('You choke and die!');
+      } else {
+        this._fullness = this._fullness + points;
       }
     },
     getHungerState: function() {
       // Fullness points per percent of max fullness
-      var perPercent = this._maxFullness / 100;
+      const perPercent = this._maxFullness / 100;
+      let hungerMsg, hungerColor;
       // 5% of max fullness or less = starving
       if (this._fullness <= perPercent * 5) {
-        return 'Starving';
-        // 25% of max fullness or less = hungry
-      } else if (this._fullness <= perPercent * 25) {
-        return 'Hungry';
+        hungerColor = '%c{red}';
+        hungerMsg = 'Starving';
+        // 20% of max fullness or less = famished
+      } else if (this._fullness <= perPercent * 20) {
+        hungerColor = '%c{orange}';
+        hungerMsg = 'Famished';
+        // 40% of max fullness or less = hungry
+      } else if (this._fullness <= perPercent * 40) {
+        hungerColor = '%c{yellow}';
+        hungerMsg = 'Hungry';
         // 95% of max fullness or more = oversatiated
       } else if (this._fullness >= perPercent * 95) {
-        return 'Oversatiated';
-        // 75% of max fullness or more = full
-      } else if (this._fullness >= perPercent * 75) {
-        return 'Full';
-        // Anything else = not hungry
+        hungerColor = '%c{red}';
+        hungerMsg = 'Oversatiated';
+        // 80% of max fullness or more = satiated
+      } else if (this._fullness >= perPercent * 80) {
+        hungerColor = '%c{orange}';
+        hungerMsg = 'Satiated';
+        // 60% of max fullness or more = full
+      } else if (this._fullness >= perPercent * 60) {
+        hungerColor = '%c{yellow}';
+        hungerMsg = 'Full';
+        // Anything else = not hungry`
       } else {
-        return `Not Hungry`;
+        hungerColor = '%c{lime}';
+        hungerMsg = 'Not Hungry';
       }
+      return [hungerColor, `${hungerMsg}`];
     }
   },
 
@@ -147,8 +171,8 @@ const EntityMixins = {
 
     listeners: {
       onGainLevel: function() {
-        // Heal the entity.
-        this.setHp(this.getMaxHp());
+        // Heal the entity by 5 * their level
+        this.heal(5 * this.getLevel());
       },
       details: function() {
         return [
@@ -198,6 +222,11 @@ const EntityMixins = {
 
     setHp: function(hp) {
       this._hp = hp;
+    },
+
+    heal: function(amount) {
+      let hp = this._hp + amount;
+      this.setHp(hp > this._maxHp ? this._maxHp : hp);
     },
 
     increaseMaxHp: function(value = 10) {
@@ -633,7 +662,7 @@ const EntityMixins = {
       return this._experience;
     },
     getNextLevelExperience: function() {
-      return this._level * this._level * 10;
+      return this._level * this._level * 20;
     },
     getStatPoints: function() {
       return this._statPoints;

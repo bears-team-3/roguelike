@@ -8,6 +8,7 @@ import Builder from '../builder';
 import Screen from './index';
 import * as actions from '../../actions/index';
 import { store } from '../../index';
+import { GearRepository } from '../items';
 
 export const playScreen = {
   _map: null,
@@ -23,6 +24,10 @@ export const playScreen = {
     // declare tiles and player
     let tiles = new Builder(width, height, depth).getTiles();
     this._player = new Entity(Player);
+    // make player start with a dagger
+    const knife = GearRepository.create('knife');
+    this._player.addItem(knife);
+    this._player.wield(knife);
     // build map with tiles and player
     this._map = new Map(tiles, this._player);
     // Start the map's engine
@@ -64,9 +69,9 @@ export const playScreen = {
     // Render hunger state
     const hungerState = this._player.getHungerState();
     display.drawText(
-      Game.getScreenWidth() - hungerState.length,
+      Game.getScreenWidth() - hungerState[1].length,
       Game.getScreenHeight(),
-      hungerState
+      hungerState.join('')
     );
   },
 
