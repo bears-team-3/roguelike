@@ -1,10 +1,9 @@
-import { vsprintf } from 'sprintf-js';
-import { ROT, Game } from './game';
+import { ROT } from './game';
 import Tile from './tile';
 import { EntityRepository } from './entities';
 import { ItemRepository } from './items';
 
-export class Map {
+export default class Map {
   constructor(tiles, player) {
     this._tiles = tiles;
     // cache dimensions
@@ -19,22 +18,53 @@ export class Map {
     // Create a table which will hold the items
     this._items = {};
     // create the engine and scheduler
-    this._scheduler = new ROT.Scheduler.Simple();
+    this._scheduler = new ROT.Scheduler.Speed();
     this._engine = new ROT.Engine(this._scheduler);
     // add the player
+    this._player = player;
     this.addEntityAtRandomPosition(player, 0);
-    // Add random enemies to each floor.
+
+    // Add random enemies and items to each floor.
+    // Except last one where we only add a minotaur.
     for (let z = 0; z < this._depth; z++) {
-      // 15 entities per floor
-      for (let i = 0; i < 15; i++) {
-        // Add a random entity
-        this.addEntityAtRandomPosition(EntityRepository.createRandom(), z);
+      if (z === this._depth - 1) {
+        this.addEntityAtRandomPosition(EntityRepository.create('minotaur'), z);
+      } else {
+        // 15 entities per floor
+        for (let i = 0; i < 15; i++) {
+          // Add a random entity
+          const entity = EntityRepository.createRandom();
+          this.addEntityAtRandomPosition(entity, z);
+          // Level up the entity based on the floor
+          if (entity.hasMixin('ExperienceGainer')) {
+            for (let level = 0; level < z; level++) {
+              entity.giveExperience(
+                entity.getNextLevelExperience() - entity.getExperience()
+              );
+            }
+          }
+        }
+        // 10 items per floor
+        for (let i = 0; i < 10; i++) {
+          // Add a random item
+          this.addItemAtRandomPosition(ItemRepository.createRandom(), z);
+        }
       }
-      // 10 items per floor
-      for (let i = 0; i < 10; i++) {
-        // Add a random entity
-        this.addItemAtRandomPosition(ItemRepository.createRandom(), z);
-      }
+    }
+    // Add weapons and armor to the map in random positions, except last floor.
+    const templates = [
+      'dagger',
+      'sword',
+      'staff',
+      'tunic',
+      'chainmail',
+      'platemail'
+    ];
+    for (let i = 0; i < templates.length; i++) {
+      this.addItemAtRandomPosition(
+        ItemRepository.create(templates[i]),
+        Math.floor((this._depth - 1) * Math.random())
+      );
     }
     // setup the explored array
     this._explored = new Array(this._depth);
@@ -60,13 +90,16 @@ export class Map {
   getFov(depth) {
     return this._fov[depth];
   }
+  getPlayer() {
+    return this._player;
+  }
 
   /***********
    * ITEMS
    ***********/
 
   getItemsAt(x, y, z) {
-    return this._items[x + ',' + y + ',' + z];
+    return this._items[x + ',' + y + ',' + z] || false;
   }
 
   setItemsAt(x, y, z, items) {
@@ -140,7 +173,7 @@ export class Map {
 
   updateEntityPosition(entity, oldX, oldY, oldZ) {
     // Delete the old key if it is the same entity and we have old positions.
-    if (oldX) {
+    if (typeof oldX === 'number') {
       const oldKey = oldX + ',' + oldY + ',' + oldZ;
       if (this._entities[oldKey] === entity) {
         delete this._entities[oldKey];
@@ -296,124 +329,3 @@ export class Map {
     }
   }
 }
-
-/**
- * Renders map and entities on display. Accounts for a map larger than screen.
- * TODO: move function to a more appropriate place (inline in playScreen?)
- */
-export const renderMap = function(display) {
-  const screenWidth = Game.getScreenWidth();
-  const screenHeight = Game.getScreenHeight();
-  const player = this._player;
-  const map = this._map;
-  // Make sure the x-axis doesn't go to the left of the left bound
-  let topLeftX = Math.max(0, player.getX() - screenWidth / 2);
-  // Make sure we still have enough space to fit an entire game screen
-  topLeftX = Math.min(topLeftX, map.getWidth() - screenWidth);
-  // Make sure the y-axis doesn't above the top bound
-  let topLeftY = Math.max(0, player.getY() - screenHeight / 2);
-  // Make sure we still have enough space to fit an entire game screen
-  topLeftY = Math.min(topLeftY, map.getHeight() - screenHeight);
-
-  // This object keeps track of all visible map cells
-  let visibleCells = {};
-  let currentDepth = player.getZ();
-  // Find all visible cells and update the object
-  map
-    .getFov(currentDepth)
-    .compute(
-      player.getX(),
-      player.getY(),
-      player.getSightRadius(),
-      (x, y, radius, visibility) => {
-        visibleCells[x + ',' + y] = true;
-        // Mark cell as explored
-        map.setExplored(x, y, currentDepth, true);
-      }
-    );
-
-  // Iterate through all visible map cells
-  for (let x = topLeftX; x < topLeftX + screenWidth; x++) {
-    for (let y = topLeftY; y < topLeftY + screenHeight; y++) {
-      if (visibleCells[x + ',' + y]) {
-        // Fetch the glyph for the tile and render it to the screen at the offset position.
-        let tile = map.getTile(x, y, player.getZ());
-        display.draw(
-          x - topLeftX,
-          y - topLeftY,
-          tile.getChar(),
-          tile.getForeground(),
-          tile.getBackground()
-        );
-      }
-    }
-  }
-
-  // Render the explored map cells
-  for (let x = topLeftX; x < topLeftX + screenWidth; x++) {
-    for (let y = topLeftY; y < topLeftY + screenHeight; y++) {
-      if (map.isExplored(x, y, currentDepth)) {
-        // Fetch the glyph for the tile and render it to the screen
-        // at the offset position.
-        let glyph = map.getTile(x, y, currentDepth);
-        let foreground = glyph.getForeground();
-        // If we are at a cell that is in the field of vision, we need
-        // to check if there are items or entities.
-        if (visibleCells[x + ',' + y]) {
-          // Check for items first, since we want to draw entities over items.
-          const items = map.getItemsAt(x, y, currentDepth);
-          // If we have items, we want to render the top most item
-          if (items) {
-            glyph = items[items.length - 1];
-          }
-          // Check if we have an entity at the position
-          if (map.getEntityAt(x, y, currentDepth)) {
-            glyph = map.getEntityAt(x, y, currentDepth);
-          }
-          // Update the foreground color in case our glyph changed
-          foreground = glyph.getForeground();
-        } else {
-          // Since the tile was previously explored but is not visible,
-          // we want to change the foreground color to dark gray.
-          foreground = 'darkgray';
-        }
-        display.draw(
-          x - topLeftX,
-          y - topLeftY,
-          glyph.getChar(),
-          foreground,
-          glyph.getBackground()
-        );
-      }
-    }
-  }
-
-  // Render the entities
-  let entities = map.getEntities();
-  for (const key in entities) {
-    const entity = entities[key];
-    // Only render the entity if they would show up on the screen
-    if (
-      entity.getX() >= topLeftX &&
-      entity.getY() >= topLeftY &&
-      entity.getX() < topLeftX + screenWidth &&
-      entity.getY() < topLeftY + screenHeight &&
-      entity.getZ() === player.getZ()
-    ) {
-      if (visibleCells[entity.getX() + ',' + entity.getY()]) {
-        display.draw(
-          entity.getX() - topLeftX,
-          entity.getY() - topLeftY,
-          entity.getChar(),
-          entity.getForeground(),
-          entity.getBackground()
-        );
-      }
-    }
-  }
-
-  // Render player HP
-  let stats = '%c{white}%b{black}';
-  stats += vsprintf('HP: %d/%d ', [player.getHp(), player.getMaxHp()]);
-  display.drawText(0, screenHeight, stats);
-};

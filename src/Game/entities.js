@@ -22,27 +22,16 @@ export const Player = {
     EntityMixins.Destructible,
     EntityMixins.Sight,
     EntityMixins.InventoryHolder,
+    EntityMixins.Equipper,
     EntityMixins.MessageRecipient,
-    EntityMixins.FoodConsumer
+    EntityMixins.FoodConsumer,
+    EntityMixins.ExperienceGainer,
+    EntityMixins.PlayerStatGainer,
+    EntityMixins.PlayerScore
   ]
 };
 
 export const EntityRepository = new Repository('entities', Entity);
-
-EntityRepository.define('tough guy', {
-  name: 'tough guy',
-  character: 'E',
-  foreground: 'red',
-  maxHp: 15,
-  defenseValue: 5,
-  attackValue: 3,
-  mixins: [
-    EntityMixins.WanderActor,
-    EntityMixins.Attacker,
-    EntityMixins.Destructible,
-    EntityMixins.CorpseDropper
-  ]
-});
 
 EntityRepository.define('bat', {
   name: 'bat',
@@ -50,11 +39,14 @@ EntityRepository.define('bat', {
   foreground: 'white',
   maxHp: 5,
   attackValue: 4,
+  speed: 2000,
   mixins: [
-    EntityMixins.WanderActor,
+    EntityMixins.TaskActor,
     EntityMixins.Attacker,
     EntityMixins.Destructible,
-    EntityMixins.CorpseDropper
+    EntityMixins.CorpseDropper,
+    EntityMixins.ExperienceGainer,
+    EntityMixins.RandomStatGainer
   ]
 });
 
@@ -65,9 +57,57 @@ EntityRepository.define('newt', {
   maxHp: 3,
   attackValue: 2,
   mixins: [
-    EntityMixins.WanderActor,
+    EntityMixins.TaskActor,
     EntityMixins.Attacker,
     EntityMixins.Destructible,
-    EntityMixins.CorpseDropper
+    EntityMixins.CorpseDropper,
+    EntityMixins.ExperienceGainer,
+    EntityMixins.RandomStatGainer
   ]
 });
+
+EntityRepository.define('kobold', {
+  name: 'kobold',
+  character: 'k',
+  foreground: 'brown',
+  maxHp: 6,
+  attackValue: 4,
+  sightRadius: 5,
+  tasks: ['hunt', 'wander'],
+  mixins: [
+    EntityMixins.TaskActor,
+    EntityMixins.Sight,
+    EntityMixins.Attacker,
+    EntityMixins.Destructible,
+    EntityMixins.CorpseDropper,
+    EntityMixins.ExperienceGainer,
+    EntityMixins.RandomStatGainer
+  ]
+});
+
+EntityRepository.define(
+  'minotaur',
+  {
+    name: 'minotaur',
+    character: 'M',
+    foreground: 'red',
+    maxHp: 80,
+    attackValue: 15,
+    defenseValue: 10,
+    sightRadius: 8,
+    tasks: ['hunt', 'wander'],
+    mixins: [
+      EntityMixins.BossActor,
+      EntityMixins.TaskActor,
+      EntityMixins.Sight,
+      EntityMixins.Attacker,
+      EntityMixins.Destructible,
+      EntityMixins.CorpseDropper,
+      EntityMixins.ExperienceGainer,
+      EntityMixins.RandomStatGainer
+    ]
+  },
+  {
+    disableRandomCreation: true
+  }
+);
