@@ -25,7 +25,7 @@ class GameContainer extends Component {
     return <div className="flex flex-column justify-center items-center">
         <GameControler />
         <h1 className="mv4 f1 normal tracked gold">THE LABYRINTH</h1>
-        { this.props.game.score ?
+        { this.props.game.over ?
           <h2 className="f3 normal tracked gold"> 
             Your score is {this.props.game.score}
           </h2> : ''

@@ -1,5 +1,6 @@
 const initalState = {
-  score: 0
+  score:0,
+  over: false
 };
 
 export const gameReducer = (state = initalState, action) => {
@@ -9,6 +10,11 @@ export const gameReducer = (state = initalState, action) => {
         ...state,
         score: action.score
       };
+    case 'GAME_OVER':
+      return {
+        ...state,
+        over: true
+      }
     default:
       return state;
   }

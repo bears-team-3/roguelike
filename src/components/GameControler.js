@@ -45,12 +45,12 @@ class GameControler extends Component {
         >
           Leaderboard
         </Link>
-        {game.score
+        {game.over 
           ? <div>
               <div className="flex">
                 {auth.authed || auth.name
                   ? <a
-                      className="f6 link dim br3 ba bw1 ph3 pv2 dib black pointer save-score-btn"
+                      className="f6 link dim br3 ba bw1 ph3 pv2 dib gold pointer save-score-btn"
                       onClick={this.handleSaveScore.bind(this)}
                     >
                       Save score

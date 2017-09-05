@@ -39,6 +39,7 @@ export const playScreen = {
     store.dispatch(
       actions.setScore(parseInt(this._player.getExperience(), 10))
     );
+    store.dispatch(actions.gameOver());
     console.log(this._player.getExperience(), 'gameOver');
     console.log('Exited play screen.');
   },

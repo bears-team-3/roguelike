@@ -135,3 +135,7 @@ export const saveScoreForGuest = (username, score) => {
     dispatch(setNameForGuest(null));
   };
 };
+
+export const gameOver = () => ({
+  type: 'GAME_OVER'
+})
