@@ -6,8 +6,7 @@ import Entity from '../entity';
 import { Player } from '../entities';
 import Builder from '../builder';
 import Screen from './index';
-import * as actions from '../../actions/index';
-import { store } from '../../index';
+
 import { GearRepository } from '../items';
 
 export const playScreen = {
@@ -36,9 +35,6 @@ export const playScreen = {
 
   exit: function() {
     Game._playerScore = this._player.getScore();
-    store.dispatch(
-      actions.setScore(parseInt(this._player.getExperience(), 10))
-    );
     console.log(this._player.getExperience(), 'gameOver');
     console.log('Exited play screen.');
   },

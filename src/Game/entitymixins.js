@@ -337,7 +337,6 @@ const EntityMixins = {
     name: 'PlayerScore',
     getScore: function() {
       const score = {
-        Name: 'ask for input',
         Level: this._level,
         Depth: this._z + 1
       };

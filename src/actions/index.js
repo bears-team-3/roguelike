@@ -23,11 +23,11 @@ export const loading = () => {
   };
 };
 
-export const saveScoreForLoggedUser = (uid, score, username) => {
+export const saveScoreForLoggedUser = (uid, score, name) => {
   return dispatch => {
     const scoreData = {
-      score,
-      username,
+      ...score,
+      username: name,
       savedAt: moment().unix()
     };
 
@@ -35,12 +35,16 @@ export const saveScoreForLoggedUser = (uid, score, username) => {
 
     const updates = {};
     updates[`/scores/${newScoreKey}`] = scoreData;
-    updates[`/users/${uid}/scores/${newScoreKey}`] = scoreData;
+
+    //clean username from scoreData object
+    const { username, ...clean } = scoreData;
+
+    updates[`/users/${uid}/scores/${newScoreKey}`] = { ...clean };
 
     return firebaseRef.ref().update(updates).then(
       result => {
         console.log('your score is saved');
-        dispatch(setScore(0));
+        dispatch(setScore(null));
       },
       error => {
         console.log('unable to save score', error);
@@ -103,13 +107,13 @@ const addScores = scores => {
 
 export const getScores = () => {
   return async dispatch => {
-    const scores = await firebaseRef.ref('/scores').once('value');
+    const scores = await firebaseRef.ref('scores').once('value');
     const scoresObj = scores.val();
-    const parsedScores = Object.keys(scoresObj)
-      .map(scoreId => {
-        return { ...scoresObj[scoreId] };
-      })
-      .sort((a, b) => a.score < b.score);
+    const parsedScores = Object.keys(scoresObj).map(scoreId => {
+      return { ...scoresObj[scoreId] };
+    });
+
+    // parsedScores.sort((a, b) => b.score - a.score);
 
     return dispatch(addScores(parsedScores));
   };
@@ -122,16 +126,31 @@ export const setNameForGuest = name => {
   };
 };
 
+const gameSaved = saved => {
+  return {
+    type: 'GAME_SAVED',
+    saved
+  };
+};
+
 export const saveScoreForGuest = (username, score) => {
   return async dispatch => {
     const scoreData = {
-      score,
+      ...score,
       username,
       savedAt: moment().unix()
     };
-
-    const savedScore = await firebaseRef.ref('/scores').push(scoreData);
-    dispatch(setScore(0));
-    dispatch(setNameForGuest(null));
+    try {
+      await firebaseRef.ref('/scores').push(scoreData);
+      dispatch(gameSaved(true));
+      dispatch(setScore(null));
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   };
 };
+
+export const gameOver = () => ({
+  type: 'GAME_OVER'
+});
