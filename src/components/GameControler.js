@@ -11,7 +11,7 @@ class GameControler extends Component {
     if (auth.authed) {
       return (
         <a
-          className="link dim black absolute pointer mr3 back-button"
+          className="link dim gold absolute pointer mr3 back-button"
           onClick={() => dispatch(actions.startLogout())}
         >
           Logout
@@ -49,12 +49,17 @@ class GameControler extends Component {
           ? <div>
               <div className="flex">
                 {auth.authed || auth.name
-                  ? <a
-                      className="f6 link dim br3 ba bw1 ph3 pv2 dib gold pointer save-score-btn"
-                      onClick={this.handleSaveScore.bind(this)}
-                    >
-                      Save score
-                    </a>
+                  ? <div className="flex flex-column">
+                      <a
+                        className="f6 link dim br3 ba bw1 ph3 pv2 dib gold pointer save-score-btn"
+                        onClick={this.handleSaveScore.bind(this)}
+                      >
+                        Save score
+                      </a>
+                      {game.saved ?
+                        <p className='dib gold ph3'>Score saved</p> : ''
+                      }
+                    </div>
                   : ''}
               </div>
               {this.displayAuth()}

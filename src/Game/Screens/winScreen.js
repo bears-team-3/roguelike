@@ -1,9 +1,15 @@
 import { ROT, Game } from '../game';
+import * as actions from '../../actions/index';
+import { store } from '../../index';
 
 export const winScreen = {
   enter: function() {
     console.log('Entered win screen.');
     Game._playerScore.bossKilled = true;
+    store.dispatch(
+      actions.setScore(Game._playerScore)
+    );
+    store.dispatch(actions.gameOver());
     console.log(Game._playerScore);
   },
 

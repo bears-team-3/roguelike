@@ -1,9 +1,13 @@
 import { Game } from '../game';
+import * as actions from '../../actions/index';
+import { store } from '../../index';
 
 export const loseScreen = {
   enter: function() {
     console.log('Entered lose screen.');
     Game._playerScore.bossKilled = false;
+    store.dispatch(actions.setScore(Game._playerScore));
+    store.dispatch(actions.gameOver());
     console.log(Game._playerScore);
   },
 
